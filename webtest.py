@@ -2,7 +2,7 @@ import subprocess
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"  # Replace with your bot's token
+TOKEN = "6092586617:AAGG--8_tLAUJhVUAWVI3rCx8VvK97JZoxI"  # Replace with your bot's token
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text("🤖 Hello! Send me a domain name, and I'll fetch WHOIS info.")
