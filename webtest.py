@@ -1,24 +1,35 @@
 import subprocess
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-def get_whois_info():
-    website = input("Enter the website address (e.g., example.com): ").strip()
+TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"  # Replace with your bot's token
+
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text("🤖 Hello! Send me a domain name, and I'll fetch WHOIS info.")
+
+def whois_lookup(update: Update, context: CallbackContext):
+    website = update.message.text.strip()
 
     if not website:
-        print("⚠️ Please enter a valid website address!")
+        update.message.reply_text("⚠️ Please enter a valid domain name.")
         return
 
     try:
-        # Run the WHOIS command
         result = subprocess.run(["whois", website], capture_output=True, text=True, check=True)
-
-        # Print WHOIS information
-        print("\n🔍 WHOIS Information:\n")
-        print(result.stdout)
-
+        update.message.reply_text(f"🔍 WHOIS Info for {website}:\n\n{result.stdout[:4000]}")
     except FileNotFoundError:
-        print("❌ WHOIS command not found! Please install WHOIS on your system.")
+        update.message.reply_text("❌ WHOIS command not found! Please install WHOIS.")
     except subprocess.CalledProcessError:
-        print("⚠️ Failed to fetch WHOIS information. The domain may not exist.")
+        update.message.reply_text("⚠️ Failed to fetch WHOIS information.")
+
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, whois_lookup))
+
+    updater.start_polling()
+    updater.idle()
 
 if __name__ == "__main__":
-    get_whois_info()
+    main()
